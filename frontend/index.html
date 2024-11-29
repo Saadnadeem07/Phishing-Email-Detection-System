@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishMail - Intelligent Phishing Detector</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(135deg, #f4fcff, #3d4857);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .container {
+            background: #ffffff;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: scale(1.03);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-family: 'Poppins', sans-serif;
+            color: #2F80ED;
+            margin-bottom: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        textarea {
+            width: 100%;
+            height: 160px;
+            border: 2px solid #2F80ED;
+            border-radius: 10px;
+            padding: 1rem;
+            background: #F5F5F5;
+            color: #333;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            outline: none;
+            resize: none;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea::placeholder {
+            color: #888;
+        }
+
+        textarea:focus {
+            border-color: #56CCF2;
+        }
+
+        button {
+            padding: 1rem 2.5rem;
+            background: #56CCF2;
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #2F80ED;
+            transform: scale(1.05);
+        }
+
+        #result {
+            margin-top: 2rem;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #099c5e;
+            transition: opacity 0.3s ease;
+        }
+
+        #result.phishing {
+            color: #ff3838;
+        }
+
+        footer {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        footer a {
+            color: #2F80ED;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .loading {
+            color: #2F80ED;
+            font-weight: bold;
+        }
+
+        /* Spinner styles */
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #56CCF2;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PhishMail Guard</h1>
+        <p>Detect phishing emails and keep your inbox secure with PhishMail.</p>
+        <form id="email-form">
+            <textarea id="email-text" placeholder="Paste your email content here..."></textarea>
+            <button type="submit">Check Email</button>
+        </form>
+        <div id="result"></div>
+        <div id="spinner" class="spinner" style="display:none;"></div>
+        <footer>
+            <p>Powered by <a href="#">PhishMail</a>. Your shield against phishing emails.</p>
+        </footer>
+    </div>
+
+    <script>
+        const form = document.getElementById('email-form');
+        const resultDiv = document.getElementById('result');
+        const spinner = document.getElementById('spinner');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const emailText = document.getElementById('email-text').value;
+
+            if (!emailText.trim()) {
+                resultDiv.textContent = 'Please enter an email to analyze.';
+                resultDiv.className = '';
+                return;
+            }
+
+            try {
+                resultDiv.textContent = '';
+                spinner.style.display = 'block';
+
+                const response = await fetch('http://127.0.0.1:8000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: emailText }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const isPhishing = data.prediction === 'Phishing Email';
+                resultDiv.textContent = `Prediction: ${data.prediction}`;
+                resultDiv.className = isPhishing ? 'phishing' : '';
+            } catch (error) {
+                console.error('Error:', error);
+                resultDiv.textContent = 'Failed to fetch prediction. Please try again.';
+                resultDiv.className = '';
+            } finally {
+                spinner.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
