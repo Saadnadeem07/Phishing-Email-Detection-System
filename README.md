@@ -10,4 +10,4 @@ This project is a FastAPI-based backend with a frontend served via an `index.htm
    ```bash
    uvicorn app:app --reload
 
-4. Go to `index.html` and start live server 
+4. Go to `index.html` and start live server.
