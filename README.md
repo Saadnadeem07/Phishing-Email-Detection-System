@@ -29,10 +29,10 @@ This project aims to combat phishing attacks by developing an intelligent email 
 - **Saad Habib**  
 - **Abdul Basit**  
 - **Talha Rauf**  
-- **Sultan-ul-Arfeen**  
+- **Sultan - Ul - Arfeen**  
 
 ## 👨‍🏫 Supervisor
-**Dr.M.Umer Aftab**  
+**Dr. M. Umer Aftab**  
 
 
 ---
