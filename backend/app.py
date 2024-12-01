@@ -35,7 +35,12 @@ async def predict(email: EmailInput):
 
     # Predict using the trained model
     prediction = model.predict(email_vector)[0]
+    prediction_proba = model.predict_proba(email_vector)[0]
+    confidence = prediction_proba[1] if prediction == 1 else prediction_proba[0]
     prediction_label = "Safe Email" if prediction == 0 else "Phishing Email"
 
-    # Return the prediction result
-    return {"prediction": prediction_label}
+    # Return the prediction result and confidence
+    return {
+        "prediction": prediction_label,
+        "confidence": float(confidence)
+    }

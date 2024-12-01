@@ -1,208 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PhishMail - Intelligent Phishing Detector</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PhishMail Guard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
     <style>
-        /* General Reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* Add keyframes for the danger animation */
+        @keyframes dangerPulse {
+            0% {
+                background: linear-gradient(to bottom right, #34d399, #f87171);
+            }
+            50% {
+                background: linear-gradient(to bottom right, #ef4444, #dc2626);
+            }
+            100% {
+                background: linear-gradient(to bottom right, #34d399, #f87171);
+            }
+        }
+
+        /* Add keyframes for the safe animation */
+        @keyframes safePulse {
+            0% {
+                background: linear-gradient(to bottom right, #34d399, #f87171);
+            }
+            50% {
+                background: linear-gradient(to bottom right, #10b981, #059669);
+            }
+            100% {
+                background: linear-gradient(to bottom right, #34d399, #f87171);
+            }
         }
 
         body {
-            font-family: 'Roboto', Arial, sans-serif;
-            background: linear-gradient(135deg, #f4fcff, #3d4857);
-            color: #fff;
+            background: linear-gradient(to bottom right, #34d399, #f87171);
             min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            padding: 2rem;
+            justify-content: center;
+            font-family: "Arial", sans-serif;
         }
 
-        .container {
-            background: #ffffff;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-            padding: 3rem;
-            width: 100%;
-            max-width: 600px;
-            text-align: center;
-            transition: transform 0.3s ease;
+        body.danger {
+            animation: dangerPulse 2s ease-in-out;
         }
 
-        .container:hover {
-            transform: scale(1.03);
+        body.safe {
+            animation: safePulse 2s ease-in-out;
         }
 
-        h1 {
-            font-size: 2.8rem;
-            font-family: 'Poppins', sans-serif;
-            color: #2F80ED;
-            margin-bottom: 1.5rem;
-            letter-spacing: 1px;
-        }
-
-        p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            color: #555;
-            line-height: 1.6;
-        }
-
-        textarea {
-            width: 100%;
-            height: 160px;
-            border: 2px solid #2F80ED;
-            border-radius: 10px;
-            padding: 1rem;
-            background: #F5F5F5;
-            color: #333;
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
-            outline: none;
-            resize: none;
-            transition: border-color 0.3s ease;
-        }
-
-        textarea::placeholder {
-            color: #888;
-        }
-
-        textarea:focus {
-            border-color: #56CCF2;
-        }
-
-        button {
-            padding: 1rem 2.5rem;
-            background: #56CCF2;
-            color: #fff;
+        /* Update the card style for better contrast during animation */
+        .card {
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
             border: none;
-            border-radius: 50px;
-            font-size: 1.2rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
         }
 
-        button:hover {
-            background-color: #2F80ED;
-            transform: scale(1.05);
+        .danger .card {
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
         }
 
-        #result {
-            margin-top: 2rem;
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #099c5e;
-            transition: opacity 0.3s ease;
+        .safe .card {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
         }
 
-        #result.phishing {
-            color: #ff3838;
+        .textarea {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
         }
 
-        footer {
-            margin-top: 2rem;
-            font-size: 0.9rem;
-            color: #777;
+        .textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
         }
 
-        footer a {
-            color: #2F80ED;
-            text-decoration: none;
-            font-weight: 500;
+        .submit-button {
+            background-color: #fbbf24;
+            color: #581c87;
         }
 
-        footer a:hover {
-            text-decoration: underline;
+        .submit-button:hover {
+            background-color: #f59e0b;
         }
 
-        .loading {
-            color: #2F80ED;
-            font-weight: bold;
+        .result-box {
+            background-color: rgba(255, 255, 255, 0.2);
         }
 
-        /* Spinner styles */
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #56CCF2;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 2s linear infinite;
-            margin: 10px auto;
+        .progress-bar {
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .progress-bar-fill {
+            height: 100%;
+            transition: width 2s ease-out;
+        }
+
+        .progress-bar-fill.bg-red-400 {
+            background-color: #ef4444;
+        }
+
+        .progress-bar-fill.bg-green-400 {
+            background-color: #10b981;
+        }
+
+        .text-red-400 {
+            color: #ef4444 !important;
+        }
+
+        .text-green-400 {
+            color: #10b981 !important;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>PhishMail Guard</h1>
-        <p>Detect phishing emails and keep your inbox secure with PhishMail.</p>
-        <form id="email-form">
-            <textarea id="email-text" placeholder="Paste your email content here..."></textarea>
-            <button type="submit">Check Email</button>
+
+<body class="p-4">
+    <div class="card w-full max-w-md p-6 rounded-lg">
+        <div class="flex items-center justify-center mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-yellow-400" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            <h1 class="text-3xl font-bold text-white ml-3">PhishMail Guard</h1>
+        </div>
+        <form id="email-form" class="space-y-4">
+            <textarea id="email-input" class="textarea w-full min-h-[120px] rounded-md p-2 resize-none"
+                placeholder="Paste your email content here..."></textarea>
+            <button type="submit" class="submit-button w-full py-2 rounded-md font-semibold">
+                Check Email
+            </button>
         </form>
-        <div id="result"></div>
-        <div id="spinner" class="spinner" style="display:none;"></div>
-        <footer>
-            <p>Powered by <a href="#">PhishMail</a>. Your shield against phishing emails.</p>
-        </footer>
+        <div id="result" class="mt-6 result-box rounded-lg p-4 hidden">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-white font-semibold">Analysis Result:</span>
+                <span id="prediction" class="text-sm font-medium"></span>
+            </div>
+            <div class="space-y-2">
+                <div class="flex justify-between text-xs text-white">
+                    <span>Confidence</span>
+                    <span id="confidence-value"></span>
+                </div>
+                <div class="progress-bar">
+                    <div id="confidence-bar" class="progress-bar-fill"></div>
+                </div>
+            </div>
+            <div id="warning" class="mt-4 flex items-center text-red-400 hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                <span class="text-sm">This email may be a phishing attempt. Be cautious!</span>
+            </div>
+        </div>
     </div>
 
     <script>
-        const form = document.getElementById('email-form');
-        const resultDiv = document.getElementById('result');
-        const spinner = document.getElementById('spinner');
+        const form = document.getElementById("email-form");
+        const emailInput = document.getElementById("email-input");
+        const resultDiv = document.getElementById("result");
+        const predictionSpan = document.getElementById("prediction");
+        const confidenceValue = document.getElementById("confidence-value");
+        const confidenceBar = document.getElementById("confidence-bar");
+        const warningDiv = document.getElementById("warning");
+        const submitButton = form.querySelector('button[type="submit"]');
 
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-            const emailText = document.getElementById('email-text').value;
-
-            if (!emailText.trim()) {
-                resultDiv.textContent = 'Please enter an email to analyze.';
-                resultDiv.className = '';
+            const email = emailInput.value.trim();
+            if (!email) {
+                alert("Please enter email content.");
                 return;
             }
 
-            try {
-                resultDiv.textContent = '';
-                spinner.style.display = 'block';
+            setLoading(true);
+            resultDiv.classList.add("hidden");
 
-                const response = await fetch('http://127.0.0.1:8000/predict', {
-                    method: 'POST',
+            try {
+                const response = await fetch("http://127.0.0.1:8000/predict", {
+                    method: "POST",
                     headers: {
-                        'Content-Type': 'application/json',
+                        "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ email: emailText }),
+                    body: JSON.stringify({ email }),
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error("Failed to fetch prediction");
                 }
 
                 const data = await response.json();
-                const isPhishing = data.prediction === 'Phishing Email';
-                resultDiv.textContent = `Prediction: ${data.prediction}`;
-                resultDiv.className = isPhishing ? 'phishing' : '';
+                console.log(data);
+                showResult(data.prediction, data.confidence * 100);
             } catch (error) {
-                console.error('Error:', error);
-                resultDiv.textContent = 'Failed to fetch prediction. Please try again.';
-                resultDiv.className = '';
+                console.error("Error:", error);
+                alert("Error: Failed to analyze email. Please try again.");
             } finally {
-                spinner.style.display = 'none';
+                setLoading(false);
             }
         });
+
+        function showResult(prediction, confidence) {
+            predictionSpan.textContent = prediction;
+            predictionSpan.className = `text-sm font-medium ${
+                prediction === "Phishing Email" ? "text-red-400" : "text-green-400"
+            }`;
+
+            confidenceValue.textContent = `${confidence}%`;
+            confidenceBar.style.width = `${confidence}%`;
+            confidenceBar.className = `progress-bar-fill ${
+                prediction === "Phishing Email" ? "bg-red-400" : "bg-green-400"
+            }`;
+
+            warningDiv.classList.toggle("hidden", prediction !== "Phishing Email");
+            
+            // Add animation classes
+            document.body.className = prediction === "Phishing Email" ? "danger" : "safe";
+            
+            // Remove the animation class after it completes
+            setTimeout(() => {
+                document.body.className = "";
+            }, 2000);
+
+            resultDiv.classList.remove("hidden");
+        }
+
+        function setLoading(isLoading) {
+            submitButton.disabled = isLoading;
+            submitButton.innerHTML = isLoading
+                ? '<svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Analyzing...'
+                : "Check Email";
+        }
     </script>
 </body>
+
 </html>
