@@ -32,7 +32,7 @@ This project aims to combat phishing attacks by developing an intelligent email 
 - **Sultan-ul-Arfeen**  
 
 ## 👨‍🏫 Supervisor
-**Dr. Umer Aftab**  
+**Dr.M.Umer Aftab**  
 
 
 ---
