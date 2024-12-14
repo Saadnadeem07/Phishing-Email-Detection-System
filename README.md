@@ -33,8 +33,9 @@ This project aims to combat phishing attacks by developing an intelligent email 
 
 ## 👨‍🏫 Supervisor
 **Dr. M. Umer Aftab**  
-
-
+---
+## 💻 OUTPUT
+![1733086187843](https://github.com/user-attachments/assets/e7c605f8-3b64-46bf-93c9-44ce6d1233bd)
 ---
 This project is a **FastAPI-based backend** with a **frontend served via an `index.html` file**.
 
