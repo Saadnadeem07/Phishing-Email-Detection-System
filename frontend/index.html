@@ -210,29 +210,34 @@
         });
 
         function showResult(prediction, confidence) {
+            if (prediction === "Safe Email" && confidence < 60) {
+            prediction = "Phishing Email";
+            }
+
             predictionSpan.textContent = prediction;
             predictionSpan.className = `text-sm font-medium ${
-                prediction === "Phishing Email" ? "text-red-400" : "text-green-400"
+            prediction === "Phishing Email" ? "text-red-400" : "text-green-400"
             }`;
 
             confidenceValue.textContent = `${confidence}%`;
             confidenceBar.style.width = `${confidence}%`;
             confidenceBar.className = `progress-bar-fill ${
-                prediction === "Phishing Email" ? "bg-red-400" : "bg-green-400"
+            prediction === "Phishing Email" ? "bg-red-400" : "bg-green-400"
             }`;
 
-            warningDiv.classList.toggle("hidden", prediction !== "Phishing Email");
+            warningDiv.classList.toggle("hidden", prediction !== "Safe Email");
             
             // Add animation classes
             document.body.className = prediction === "Phishing Email" ? "danger" : "safe";
             
             // Remove the animation class after it completes
             setTimeout(() => {
-                document.body.className = "";
+            document.body.className = "";
             }, 2000);
 
             resultDiv.classList.remove("hidden");
         }
+
 
         function setLoading(isLoading) {
             submitButton.disabled = isLoading;
