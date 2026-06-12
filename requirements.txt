@@ -1,0 +1,8 @@
+# Web API
+fastapi
+uvicorn[standard]
+pydantic
+
+# Machine learning
+scikit-learn
+pandas

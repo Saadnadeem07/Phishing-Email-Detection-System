@@ -1,7 +1,13 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
 import pickle
+from pathlib import Path
+
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+# Resolve model paths relative to this file so the app can be started
+# from any working directory.
+BASE_DIR = Path(__file__).resolve().parent
 
 # Define email input schema
 class EmailInput(BaseModel):
@@ -20,11 +26,16 @@ app.add_middleware(
 )
 
 # Load the model and vectorizer
-with open('model.pkl', 'rb') as model_file:
+with open(BASE_DIR / "model.pkl", "rb") as model_file:
     model = pickle.load(model_file)
 
-with open('vectorizer.pkl', 'rb') as vectorizer_file:
+with open(BASE_DIR / "vectorizer.pkl", "rb") as vectorizer_file:
     vectorizer = pickle.load(vectorizer_file)
+
+
+@app.get("/")
+async def health():
+    return {"status": "ok", "message": "Phishing Email Detection API is running"}
 
 # Define the predict endpoint
 @app.post("/predict")
